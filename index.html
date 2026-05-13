@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eziuche Nwaogu | Backend Developer & Data Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0c10;
+    --paper: #f5f2eb;
+    --amber: #e8963a;
+    --amber-dim: #c4762a;
+    --teal: #1a9b8a;
+    --teal-bright: #22c5b0;
+    --rust: #c94f2e;
+    --grid: rgba(232,150,58,0.08);
+    --muted: #6b7280;
+    --card-bg: #0f1218;
+    --card-border: rgba(232,150,58,0.15);
+    --glow: rgba(232,150,58,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--amber);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--amber);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.22s ease, border-color 0.3s;
+    opacity: 0.5;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1; opacity: 0.4;
+  }
+
+  /* ── GRID BG ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(10,12,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    color: var(--paper);
+  }
+  .nav-logo span { color: var(--amber); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; left: 0; bottom: -3px;
+    width: 0; height: 1px; background: var(--amber);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--amber); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.1em;
+    padding: 0.55rem 1.4rem;
+    border: 1px solid var(--amber);
+    color: var(--amber); background: transparent;
+    text-decoration: none; text-transform: uppercase;
+    transition: background 0.25s, color 0.25s;
+  }
+  .nav-cta:hover { background: var(--amber); color: var(--ink); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 4rem 5rem;
+    position: relative; z-index: 2;
+    overflow: hidden;
+  }
+
+  .hero-bg-number {
+    position: absolute; top: 50%; right: -2rem;
+    transform: translateY(-50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(16rem, 28vw, 32rem);
+    font-weight: 800;
+    color: rgba(232,150,58,0.04);
+    line-height: 1; pointer-events: none;
+    letter-spacing: -0.05em;
+    user-select: none;
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-weight: 400;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--teal-bright);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .hero-label::before {
+    content: ''; display: block;
+    width: 32px; height: 1px; background: var(--teal-bright);
+  }
+
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.2rem;
+  }
+  .hero-name .line2 {
+    color: var(--amber);
+    -webkit-text-stroke: 0px;
+  }
+
+  .hero-tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    margin-top: 1.8rem;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 2rem;
+    margin-top: 3rem;
+  }
+  .btn-primary {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    padding: 0.9rem 2.4rem;
+    background: var(--amber); color: var(--ink);
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--glow);
+  }
+  .btn-ghost {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; letter-spacing: 0.12em;
+    text-transform: uppercase; text-decoration: none;
+    color: var(--paper); display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--amber); }
+  .btn-ghost svg { transition: transform 0.2s; }
+  .btn-ghost:hover svg { transform: translateX(4px); }
+
+  .hero-stats {
+    position: absolute; right: 4rem; bottom: 5rem;
+    display: flex; flex-direction: column; gap: 2rem;
+    text-align: right;
+  }
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem; font-weight: 800;
+    color: var(--amber); line-height: 1;
+  }
+  .hero-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── SECTION BASE ── */
+  section { position: relative; z-index: 2; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .section-label::before {
+    content: '//'; color: var(--teal);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    padding: 7rem 4rem;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6rem; align-items: center;
+  }
+  .about-text p {
+    font-size: 1.05rem; line-height: 1.9;
+    color: rgba(245,242,235,0.75);
+    margin-bottom: 1.2rem;
+  }
+  .about-text p strong { color: var(--amber); font-weight: 500; }
+
+  .about-right { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .about-card {
+    border: 1px solid var(--card-border);
+    padding: 1.5rem 2rem;
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(4px);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .about-card:hover {
+    border-color: rgba(232,150,58,0.4);
+    transform: translateX(6px);
+  }
+  .about-card-icon {
+    font-size: 1.4rem; margin-bottom: 0.6rem;
+  }
+  .about-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--paper); margin-bottom: 0.3rem;
+  }
+  .about-card-desc {
+    font-size: 0.85rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── SKILLS ── */
+  #skills {
+    padding: 7rem 4rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .skills-header { margin-bottom: 4rem; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5px;
+    background: var(--card-border);
+    border: 1px solid var(--card-border);
+  }
+  .skill-group {
+    background: var(--ink);
+    padding: 2rem 1.8rem;
+    transition: background 0.3s;
+  }
+  .skill-group:hover { background: rgba(232,150,58,0.04); }
+  .skill-group-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .skill-tags { display: flex; flex-direction: column; gap: 0.5rem; }
+  .skill-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; color: rgba(245,242,235,0.8);
+    padding: 0.4rem 0;
+    border-left: 2px solid transparent;
+    padding-left: 0.8rem;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .skill-group:hover .skill-tag {
+    border-left-color: var(--teal);
+    color: var(--paper);
+  }
+
+  /* ── PIPELINE VISUALIZER ── */
+  #pipeline {
+    padding: 7rem 4rem;
+    border-top: 1px solid var(--card-border);
+    overflow: hidden;
+  }
+  .pipeline-header { margin-bottom: 3rem; }
+  .pipeline-desc {
+    font-size: 1rem; color: var(--muted); max-width: 560px;
+    line-height: 1.75; margin-top: 0.8rem;
+  }
+
+  .pipeline-viz {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--card-border);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .pipeline-viz::before {
+    content: 'ETL PIPELINE ARCHITECTURE';
+    position: absolute; top: 1rem; right: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+    color: rgba(232,150,58,0.3);
+  }
+
+  .pipeline-row {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 1.5rem;
+  }
+  .pipeline-row:last-child { margin-bottom: 0; }
+
+  .p-node {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .p-node:hover { border-color: rgba(232,150,58,0.5); }
+  .p-node-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--amber);
+    margin-bottom: 0.3rem;
+  }
+  .p-node-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--paper);
+  }
+  .p-node-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  .p-arrow {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--amber));
+    position: relative; flex-shrink: 0;
+    overflow: hidden;
+  }
+  .p-arrow::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, white, transparent);
+    animation: flow 2s linear infinite;
+  }
+  @keyframes flow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .p-arrow-head {
+    position: absolute; right: -6px; top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 7px solid var(--amber);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+
+  .p-node-status {
+    position: absolute; top: 0.7rem; right: 0.8rem;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--teal-bright);
+    animation: pulse-dot 2s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,176,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(34,197,176,0); }
+  }
+
+  .tech-stack-row {
+    display: flex; gap: 0.6rem; flex-wrap: wrap;
+    margin-top: 2rem; padding-top: 2rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .tech-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--card-border);
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .tech-pill:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ── PROJECTS ── */
+  #projects {
+    padding: 7rem 4rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .projects-header { margin-bottom: 4rem; }
+
+  .projects-filter {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em;
+    padding: 0.4rem 1.1rem; border: 1px solid var(--card-border);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .filter-btn.active,
+  .filter-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--card-border);
+    border: 1px solid var(--card-border);
+    margin-top: 2rem;
+  }
+
+  .project-card {
+    background: var(--ink);
+    padding: 2.5rem 2rem;
+    display: flex; flex-direction: column;
+    transition: background 0.3s;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+  }
+  .project-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: linear-gradient(90deg, var(--amber), var(--teal));
+    transition: width 0.4s ease;
+  }
+  .project-card:hover::after { width: 100%; }
+  .project-card:hover { background: rgba(232,150,58,0.03); }
+
+  .project-card.featured {
+    grid-column: span 2;
+    background: rgba(232,150,58,0.03);
+    border-right: 1px solid var(--card-border);
+  }
+
+  .project-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem; font-weight: 800;
+    color: rgba(232,150,58,0.1);
+    line-height: 1; margin-bottom: 1.5rem;
+    letter-spacing: -0.04em;
+  }
+
+  .project-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--teal-bright);
+    margin-bottom: 0.6rem;
+  }
+
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--paper); margin-bottom: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .project-desc {
+    font-size: 0.85rem; color: var(--muted);
+    line-height: 1.7; flex: 1;
+  }
+
+  .project-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    margin-top: 1.5rem;
+  }
+  .project-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.08em;
+    padding: 0.25rem 0.6rem;
+    background: rgba(232,150,58,0.08);
+    color: var(--amber); border: 1px solid rgba(232,150,58,0.2);
+  }
+
+  .project-link {
+    margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .project-link:hover { color: var(--amber); }
+
+  /* ── EXPERIENCE ── */
+  #experience {
+    padding: 7rem 4rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .experience-layout {
+    display: grid; grid-template-columns: 1fr 2fr;
+    gap: 5rem; margin-top: 4rem;
+  }
+  .timeline {
+    position: relative;
+  }
+  .timeline-line {
+    position: absolute; left: 0; top: 0.5rem; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, var(--amber), transparent);
+  }
+  .timeline-item {
+    padding-left: 2rem; margin-bottom: 2.5rem;
+    position: relative; cursor: pointer;
+  }
+  .timeline-dot {
+    position: absolute; left: -5px; top: 0.4rem;
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 1px solid var(--amber);
+    background: var(--ink);
+    transition: background 0.2s;
+  }
+  .timeline-item:hover .timeline-dot,
+  .timeline-item.active .timeline-dot { background: var(--amber); }
+  .timeline-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.3rem;
+  }
+  .timeline-role {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--paper); line-height: 1.3;
+  }
+  .timeline-company {
+    font-size: 0.8rem; color: var(--teal-bright);
+    margin-top: 0.2rem;
+  }
+
+  .exp-detail {
+    border: 1px solid var(--card-border);
+    padding: 2.5rem;
+    background: rgba(255,255,255,0.015);
+    position: relative;
+  }
+  .exp-detail-header {
+    margin-bottom: 1.5rem; padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .exp-detail-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 0.4rem;
+  }
+  .exp-detail-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem; font-weight: 800; color: var(--paper);
+  }
+  .exp-detail-company {
+    font-size: 0.9rem; color: var(--teal-bright); margin-top: 0.2rem;
+  }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 0.88rem; color: rgba(245,242,235,0.75);
+    line-height: 1.75; margin-bottom: 0.7rem;
+    padding-left: 1.4rem; position: relative;
+  }
+  .exp-bullets li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--amber); font-size: 0.75rem;
+  }
+
+  /* ── CERTIFICATIONS ── */
+  #certifications {
+    padding: 7rem 4rem;
+    border-top: 1px solid var(--card-border);
+  }
+  .certs-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: var(--card-border);
+    border: 1px solid var(--card-border);
+    margin-top: 3rem;
+  }
+  .cert-card {
+    background: var(--ink);
+    padding: 2rem 1.8rem;
+    transition: background 0.3s;
+  }
+  .cert-card:hover { background: rgba(232,150,58,0.03); }
+  .cert-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--card-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; margin-bottom: 1rem;
+    background: rgba(232,150,58,0.05);
+  }
+  .cert-issuer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--teal-bright); margin-bottom: 0.4rem;
+  }
+  .cert-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--paper); line-height: 1.35;
+  }
+  .cert-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--muted);
+    margin-top: 0.5rem;
+  }
+
+  /* ── CONTACT ── */
+  #contact {
+    padding: 7rem 4rem 5rem;
+    border-top: 1px solid var(--card-border);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+  }
+  .contact-left .section-title { font-size: clamp(2rem, 4vw, 4rem); }
+  .contact-desc {
+    font-size: 1rem; color: var(--muted); line-height: 1.8;
+    max-width: 400px; margin-top: 1.2rem;
+  }
+  .contact-links {
+    display: flex; flex-direction: column; gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .contact-link {
+    display: flex; align-items: center; gap: 1rem;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--card-border);
+    transition: border-color 0.2s, transform 0.2s;
+    background: rgba(255,255,255,0.015);
+  }
+  .contact-link:hover {
+    border-color: var(--amber);
+    transform: translateX(6px);
+  }
+  .contact-link-icon {
+    width: 36px; height: 36px;
+    background: rgba(232,150,58,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .contact-link-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 0.1rem;
+  }
+  .contact-link-value {
+    font-size: 0.85rem; color: var(--paper);
+  }
+
+  .contact-right { padding-top: 4rem; }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .form-input, .form-textarea {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+    padding: 0.9rem 1.2rem;
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    transition: border-color 0.2s;
+    outline: none;
+    resize: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--amber);
+  }
+  .form-textarea { min-height: 130px; }
+  .form-submit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 1rem;
+    background: var(--amber); color: var(--ink);
+    border: none; cursor: pointer; font-weight: 500;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 0.5rem;
+  }
+  .form-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--card-border);
+    padding: 2rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 2;
+  }
+  .footer-copy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted);
+  }
+  .footer-socials { display: flex; gap: 1.5rem; }
+  .footer-socials a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-socials a:hover { color: var(--amber); }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .stagger-1 { transition-delay: 0.1s; }
+  .stagger-2 { transition-delay: 0.2s; }
+  .stagger-3 { transition-delay: 0.3s; }
+  .stagger-4 { transition-delay: 0.4s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    nav { padding: 1.2rem 2rem; }
+    nav .nav-links { display: none; }
+    #hero { padding: 0 2rem 5rem; }
+    #about, #contact { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2rem; }
+    #skills, #pipeline, #projects, #experience, #certifications { padding: 5rem 2rem; }
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; }
+    .experience-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .certs-grid { grid-template-columns: repeat(2, 1fr); }
+    footer { flex-direction: column; gap: 1rem; padding: 2rem; }
+    .hero-stats { position: static; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; margin-top: 2.5rem; text-align: left; }
+    .hero-bg-number { display: none; }
+    .pipeline-row { flex-direction: column; gap: 1rem; }
+    .p-arrow { width: 2px; height: 30px; background: linear-gradient(to bottom, var(--teal), var(--amber)); margin: 0 auto; }
+    .p-arrow-head { right: 50%; bottom: -6px; top: auto; transform: translateX(50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--amber); border-bottom: none; }
+  }
+
+  @media (max-width: 640px) {
+    .skills-grid, .certs-grid { grid-template-columns: 1fr; }
+    .contact-form { gap: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">EN<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="https://github.com/eziuche-nwaogu" target="_blank" class="nav-cta">GitHub ↗</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg-number">10+</div>
+
+  <div class="hero-label reveal">Backend Developer · Data Engineer · Nigeria</div>
+
+  <h1 class="hero-name reveal stagger-1">
+    Eziuche<br>
+    <span class="line2">Nwaogu.</span>
+  </h1>
+
+  <p class="hero-tagline reveal stagger-2">
+    Building scalable backend systems, automating data pipelines, and empowering the next generation of engineers — with 10+ years of real-world impact across enterprise IT, public sector, and software development.
+  </p>
+
+  <div class="hero-actions reveal stagger-3">
+    <a href="#projects" class="btn-primary">View Projects</a>
+    <a href="#contact" class="btn-ghost">
+      Let's Collaborate
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="hero-stats reveal stagger-4">
+    <div>
+      <div class="hero-stat-num">10+</div>
+      <div class="hero-stat-label">Years Experience</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">26</div>
+      <div class="hero-stat-label">GitHub Repos</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">4+</div>
+      <div class="hero-stat-label">Major Projects</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="12" height="20" viewBox="0 0 12 20"><rect x="4.5" y="2" width="3" height="6" rx="1.5" fill="currentColor"/><rect x="0" y="0" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+    Scroll
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="about-text">
+    <div class="section-label reveal">About Me</div>
+    <h2 class="section-title reveal stagger-1">
+      Building systems<br>that outlast trends.
+    </h2>
+    <p class="reveal stagger-2">
+      I'm a <strong>Backend Developer and Data Engineer</strong> based in Nigeria with over a decade of experience spanning enterprise IT infrastructure, automation, and software engineering. My journey began in hardware — maintaining IBM and Lenovo BladeCenter servers for MTN Nigeria — and evolved into architecting scalable software solutions.
+    </p>
+    <p class="reveal stagger-3">
+      Today I specialize in building robust <strong>ETL pipelines with Apache Airflow</strong>, crafting <strong>RESTful APIs with Django and FastAPI</strong>, and designing database architectures with PostgreSQL and MySQL. I also teach data engineering and backend development at LearnFactory Nigeria.
+    </p>
+    <p class="reveal stagger-4">
+      My vision: <em>"To deliver high-impact digital solutions that drive innovation, automate workflows, and empower people through knowledge and technology."</em>
+    </p>
+  </div>
+
+  <div class="about-right">
+    <div class="about-card reveal stagger-1">
+      <div class="about-card-icon">⚙️</div>
+      <div class="about-card-title">Backend Engineering</div>
+      <div class="about-card-desc">Architecting scalable APIs, authentication systems, and server-side logic with Python, Django & FastAPI.</div>
+    </div>
+    <div class="about-card reveal stagger-2">
+      <div class="about-card-icon">🔄</div>
+      <div class="about-card-title">Data Engineering & ETL</div>
+      <div class="about-card-desc">Designing and orchestrating batch data pipelines with Apache Airflow, Pandas, and PostgreSQL.</div>
+    </div>
+    <div class="about-card reveal stagger-3">
+      <div class="about-card-icon">🖥️</div>
+      <div class="about-card-title">IT Infrastructure</div>
+      <div class="about-card-desc">IBM & Lenovo certified server specialist — BladeCenter, NeXtScale, SystemX, and network engineering.</div>
+    </div>
+    <div class="about-card reveal stagger-4">
+      <div class="about-card-icon">📚</div>
+      <div class="about-card-title">Technical Tutoring</div>
+      <div class="about-card-desc">Mentoring engineers at LearnFactory Nigeria in data engineering, ETL workflows, and backend development.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ── -->
+<section id="skills">
+  <div class="skills-header">
+    <div class="section-label reveal">Technical Arsenal</div>
+    <h2 class="section-title reveal stagger-1">Skills &amp; Technologies</h2>
+  </div>
+
+  <div class="skills-grid reveal stagger-2">
+    <div class="skill-group">
+      <div class="skill-group-title">Languages</div>
+      <div class="skill-tags">
+        <div class="skill-tag">Python</div>
+        <div class="skill-tag">SQL</div>
+        <div class="skill-tag">Bash / Shell</div>
+        <div class="skill-tag">HTML / CSS</div>
+        <div class="skill-tag">JavaScript</div>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Backend Frameworks</div>
+      <div class="skill-tags">
+        <div class="skill-tag">Django</div>
+        <div class="skill-tag">Django REST Framework</div>
+        <div class="skill-tag">FastAPI</div>
+        <div class="skill-tag">Tkinter (GUI)</div>
+        <div class="skill-tag">JWT / RBAC Auth</div>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Data Engineering</div>
+      <div class="skill-tags">
+        <div class="skill-tag">Apache Airflow</div>
+        <div class="skill-tag">Pandas</div>
+        <div class="skill-tag">Matplotlib / Seaborn</div>
+        <div class="skill-tag">ETL Pipelines</div>
+        <div class="skill-tag">Data Warehousing</div>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">Infrastructure & Tools</div>
+      <div class="skill-tags">
+        <div class="skill-tag">PostgreSQL / MySQL</div>
+        <div class="skill-tag">Git / GitHub</div>
+        <div class="skill-tag">IBM BladeCenter</div>
+        <div class="skill-tag">N+ / CCNA Networking</div>
+        <div class="skill-tag">WordPress / Canva</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ETL PIPELINE VISUALIZER ── -->
+<section id="pipeline">
+  <div class="pipeline-header">
+    <div class="section-label reveal">Data Engineering</div>
+    <h2 class="section-title reveal stagger-1">ETL Pipeline Architecture</h2>
+    <p class="pipeline-desc reveal stagger-2">
+      I design and orchestrate end-to-end data pipelines for batch processing workflows — from raw data ingestion to transformed, analytics-ready output.
+    </p>
+  </div>
+
+  <div class="pipeline-viz reveal stagger-3">
+    <!-- Row 1: Extract -->
+    <div class="pipeline-row">
+      <div class="p-node">
+        <div class="p-node-status"></div>
+        <div class="p-node-label">Source 01</div>
+        <div class="p-node-title">CSV / File Ingestion</div>
+        <div class="p-node-sub">pandas · os · glob</div>
+      </div>
+      <div class="p-arrow"><div class="p-arrow-head"></div></div>
+      <div class="p-node">
+        <div class="p-node-status"></div>
+        <div class="p-node-label">Source 02</div>
+        <div class="p-node-title">Database Extract</div>
+        <div class="p-node-sub">PostgreSQL · SQLAlchemy</div>
+      </div>
+      <div class="p-arrow"><div class="p-arrow-head"></div></div>
+      <div class="p-node">
+        <div class="p-node-status"></div>
+        <div class="p-node-label">Source 03</div>
+        <div class="p-node-title">API Data Pull</div>
+        <div class="p-node-sub">requests · REST APIs</div>
+      </div>
+    </div>
+
+    <!-- Row 2: Transform -->
+    <div class="pipeline-row" style="margin-top:0.5rem">
+      <div style="flex:1;display:flex;justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+          <div style="width:1px;height:30px;background:linear-gradient(to bottom,var(--teal),var(--amber))"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--amber)"></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+          <div style="width:1px;height:30px;background:linear-gradient(to bottom,var(--teal),var(--amber))"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--amber)"></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+          <div style="width:1px;height:30px;background:linear-gradient(to bottom,var(--teal),var(--amber))"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--amber)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-row">
+      <div class="p-node" style="border-color:rgba(34,197,176,0.3)">
+        <div class="p-node-label" style="color:var(--teal-bright)">Transform 01</div>
+        <div class="p-node-title">Data Cleaning</div>
+        <div class="p-node-sub">pandas · null handling · dedup</div>
+      </div>
+      <div class="p-arrow"><div class="p-arrow-head"></div></div>
+      <div class="p-node" style="border-color:rgba(34,197,176,0.3)">
+        <div class="p-node-label" style="color:var(--teal-bright)">Transform 02</div>
+        <div class="p-node-title">Feature Engineering</div>
+        <div class="p-node-sub">aggregations · joins · normalization</div>
+      </div>
+      <div class="p-arrow"><div class="p-arrow-head"></div></div>
+      <div class="p-node" style="border-color:rgba(34,197,176,0.3)">
+        <div class="p-node-label" style="color:var(--teal-bright)">Transform 03</div>
+        <div class="p-node-title">Validation Layer</div>
+        <div class="p-node-sub">schema checks · type casting</div>
+      </div>
+    </div>
+
+    <div class="pipeline-row" style="margin-top:0.5rem">
+      <div style="flex:3;display:flex;justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+          <div style="width:1px;height:30px;background:linear-gradient(to bottom,var(--teal),var(--amber))"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--amber)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-row">
+      <div class="p-node" style="flex:2;background:rgba(232,150,58,0.04);border-color:rgba(232,150,58,0.3)">
+        <div class="p-node-label">Orchestrator</div>
+        <div class="p-node-title">Apache Airflow DAG</div>
+        <div class="p-node-sub">Scheduled · Monitored · Retry-aware batch processing</div>
+      </div>
+      <div class="p-arrow"><div class="p-arrow-head"></div></div>
+      <div class="p-node" style="flex:2">
+        <div class="p-node-label">Load — Target</div>
+        <div class="p-node-title">PostgreSQL / Data Warehouse</div>
+        <div class="p-node-sub">SQLAlchemy · psycopg2 · bulk insert</div>
+      </div>
+    </div>
+
+    <div class="tech-stack-row">
+      <div class="tech-pill">Apache Airflow</div>
+      <div class="tech-pill">Python 3.x</div>
+      <div class="tech-pill">Pandas</div>
+      <div class="tech-pill">PostgreSQL</div>
+      <div class="tech-pill">SQLAlchemy</div>
+      <div class="tech-pill">MySQL</div>
+      <div class="tech-pill">Bash Scripts</div>
+      <div class="tech-pill">DAG Scheduling</div>
+      <div class="tech-pill">Data Validation</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects">
+  <div class="projects-header">
+    <div class="section-label reveal">Work</div>
+    <h2 class="section-title reveal stagger-1">Featured Projects</h2>
+  </div>
+
+  <div class="projects-filter reveal stagger-2">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Data Engineering</button>
+    <button class="filter-btn">Backend API</button>
+    <button class="filter-btn">Frontend</button>
+  </div>
+
+  <div class="projects-grid reveal stagger-3">
+
+    <!-- Featured: ETL Pipelines -->
+    <div class="project-card featured">
+      <div class="project-number">01</div>
+      <div class="project-category">Data Engineering · ETL</div>
+      <div class="project-title">Airflow ETL Automation Pipelines</div>
+      <div class="project-desc">
+        Production-grade batch ETL pipelines built with Apache Airflow and Python. Features scheduled DAGs for automated data ingestion from multiple sources (CSV files, APIs, relational databases), transformation layers with Pandas for cleaning and normalization, and load steps into PostgreSQL/MySQL targets. Includes retry logic, alerting, and monitoring dashboards.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Apache Airflow</span>
+        <span class="project-tag">Python</span>
+        <span class="project-tag">Pandas</span>
+        <span class="project-tag">PostgreSQL</span>
+        <span class="project-tag">DAG Scheduling</span>
+        <span class="project-tag">ETL</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <!-- Certificate Verification -->
+    <div class="project-card">
+      <div class="project-number">02</div>
+      <div class="project-category">Backend · Django</div>
+      <div class="project-title">Certificate Verification System</div>
+      <div class="project-desc">
+        Django web application for issuing and verifying digital certificates using QR codes. Integrates SendGrid for automated email delivery, unique QR-encoded verification links, and an admin dashboard for certificate management.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Django</span>
+        <span class="project-tag">PostgreSQL</span>
+        <span class="project-tag">QR Code</span>
+        <span class="project-tag">SendGrid</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <!-- E-commerce Backend API -->
+    <div class="project-card">
+      <div class="project-number">03</div>
+      <div class="project-category">Backend API · FastAPI</div>
+      <div class="project-title">E-Commerce Backend API</div>
+      <div class="project-desc">
+        Full-featured RESTful API built with FastAPI and Django. Implements JWT authentication, Role-Based Access Control (RBAC), product catalogue management, cart and order workflows, and PostgreSQL persistence.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">FastAPI</span>
+        <span class="project-tag">Django</span>
+        <span class="project-tag">JWT Auth</span>
+        <span class="project-tag">RBAC</span>
+        <span class="project-tag">PostgreSQL</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu/e-commerce" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <!-- School Management System -->
+    <div class="project-card">
+      <div class="project-number">04</div>
+      <div class="project-category">Desktop GUI · Python</div>
+      <div class="project-title">School Management System</div>
+      <div class="project-desc">
+        Tkinter-based desktop application for managing school administrative workflows — student registration, fee tracking, result management, and staff records — backed by PostgreSQL for persistent storage.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Python</span>
+        <span class="project-tag">Tkinter</span>
+        <span class="project-tag">PostgreSQL</span>
+        <span class="project-tag">GUI</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <!-- E-commerce Frontend -->
+    <div class="project-card">
+      <div class="project-number">05</div>
+      <div class="project-category">Frontend · HTML/CSS</div>
+      <div class="project-title">E-Commerce Storefront (HTML/CSS)</div>
+      <div class="project-desc">
+        Fully responsive multi-category e-commerce storefront built with vanilla HTML and CSS. Features a product carousel, category navigation, and a clean, mobile-friendly layout. First public web project on GitHub.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">HTML5</span>
+        <span class="project-tag">CSS3</span>
+        <span class="project-tag">Responsive</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu/e-commerce" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+    <!-- Data Analysis -->
+    <div class="project-card">
+      <div class="project-number">06</div>
+      <div class="project-category">Data Analysis · Python</div>
+      <div class="project-title">Data Analysis & Visualizations</div>
+      <div class="project-desc">
+        Collection of data analysis projects using Python, Pandas, Matplotlib, and Seaborn. Covers statistical analysis, trend visualization, and exploratory data analysis for real-world datasets.
+      </div>
+      <div class="project-tags">
+        <span class="project-tag">Pandas</span>
+        <span class="project-tag">Matplotlib</span>
+        <span class="project-tag">Seaborn</span>
+        <span class="project-tag">EDA</span>
+      </div>
+      <a href="https://github.com/eziuche-nwaogu" target="_blank" class="project-link">View on GitHub →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── EXPERIENCE ── -->
+<section id="experience">
+  <div class="section-label reveal">Career</div>
+  <h2 class="section-title reveal stagger-1">Professional Journey</h2>
+
+  <div class="experience-layout">
+    <div class="timeline reveal stagger-2">
+      <div class="timeline-line"></div>
+
+      <div class="timeline-item active" data-exp="learfactory" onclick="switchExp(this,'learnfactory')">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">Oct 2024 – Present</div>
+        <div class="timeline-role">Part-Time Tutor</div>
+        <div class="timeline-company">LearnFactory Nigeria</div>
+      </div>
+
+      <div class="timeline-item" data-exp="mtn" onclick="switchExp(this,'mtn')">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">Apr 2013 – Present</div>
+        <div class="timeline-role">IT Support Specialist</div>
+        <div class="timeline-company">Tri-Continental (MTN Nigeria)</div>
+      </div>
+
+      <div class="timeline-item" data-exp="abba" onclick="switchExp(this,'abba')">
+        <div class="timeline-dot"></div>
+        <div class="timeline-period">Dec 2010 – Mar 2013</div>
+        <div class="timeline-role">Computer Maintenance Officer</div>
+        <div class="timeline-company">Aba North Town Planning Authority</div>
+      </div>
+    </div>
+
+    <div id="exp-detail" class="exp-detail reveal stagger-3">
+      <div class="exp-detail-header">
+        <div class="exp-detail-period" id="exp-period">Oct 2024 – Present</div>
+        <div class="exp-detail-title" id="exp-title">Part-Time Tutor</div>
+        <div class="exp-detail-company" id="exp-company">LearnFactory Nigeria</div>
+      </div>
+      <ul class="exp-bullets" id="exp-bullets">
+        <li>Teach data engineering, backend development, and ETL workflows to cohorts of aspiring developers.</li>
+        <li>Mentor students on Apache Airflow DAG design, PostgreSQL optimization, and Python best practices.</li>
+        <li>Design hands-on projects and exercises aligned with industry-standard workflows.</li>
+        <li>Guide students through building their first ETL pipelines and REST APIs from scratch.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── CERTIFICATIONS ── -->
+<section id="certifications">
+  <div class="section-label reveal">Credentials</div>
+  <h2 class="section-title reveal stagger-1">Certifications &amp; Education</h2>
+
+  <div class="certs-grid reveal stagger-2">
+    <div class="cert-card">
+      <div class="cert-icon">🐍</div>
+      <div class="cert-issuer">Computer Professionals of Nigeria</div>
+      <div class="cert-name">Level 3 Certificate in Data Analysis with Python</div>
+      <div class="cert-year">November 2025</div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">💻</div>
+      <div class="cert-issuer">Certiport / ITS</div>
+      <div class="cert-name">IT Specialist in Python (ITS)</div>
+      <div class="cert-year">November 2025</div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🖥️</div>
+      <div class="cert-issuer">IBM</div>
+      <div class="cert-name">Power8 Systems & Storage Systems Certification</div>
+      <div class="cert-year">2017</div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🔧</div>
+      <div class="cert-issuer">Lenovo</div>
+      <div class="cert-name">Servicing NeXtScale, BladeCenter & SystemX Servers</div>
+      <div class="cert-year">2015 – 2016</div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🛡️</div>
+      <div class="cert-issuer">Nigeria Institute of Safety Professionals</div>
+      <div class="cert-name">HSE Supervision — Level 3</div>
+      <div class="cert-year">Active</div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-icon">🎓</div>
+      <div class="cert-issuer">FUTO | Computer College Ibadan</div>
+      <div class="cert-name">B.Tech Material Science · Diploma in Computer Engineering</div>
+      <div class="cert-year">2006 · 2008</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="contact-left">
+    <div class="section-label reveal">Get In Touch</div>
+    <h2 class="section-title reveal stagger-1">
+      Let's build<br>something great.
+    </h2>
+    <p class="contact-desc reveal stagger-2">
+      Open to backend engineering roles, data engineering contracts, freelance projects, and technical mentorship opportunities.
+    </p>
+
+    <div class="contact-links reveal stagger-3">
+      <a href="mailto:ezyurch@gmail.com" class="contact-link">
+        <div class="contact-link-icon">✉️</div>
+        <div>
+          <span class="contact-link-label">Email</span>
+          <span class="contact-link-value">ezyurch@gmail.com</span>
+        </div>
+      </a>
+      <a href="tel:+2347068085971" class="contact-link">
+        <div class="contact-link-icon">📞</div>
+        <div>
+          <span class="contact-link-label">Phone</span>
+          <span class="contact-link-value">+234 706 808 5971</span>
+        </div>
+      </a>
+      <a href="https://github.com/eziuche-nwaogu" target="_blank" class="contact-link">
+        <div class="contact-link-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div>
+          <span class="contact-link-label">GitHub</span>
+          <span class="contact-link-value">github.com/eziuche-nwaogu</span>
+        </div>
+      </a>
+      <a href="#" class="contact-link">
+        <div class="contact-link-icon">📍</div>
+        <div>
+          <span class="contact-link-label">Location</span>
+          <span class="contact-link-value">Nigeria (Open to Remote)</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="contact-right reveal stagger-2">
+    <div class="section-label">Send a Message</div>
+    <div class="contact-form" style="margin-top:1.5rem">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="john@company.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" class="form-input" placeholder="Project Inquiry / Collaboration">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Tell me about your project or opportunity..."></textarea>
+      </div>
+      <button class="form-submit" onclick="handleSubmit()">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-copy">© 2025 Eziuche Nwaogu · Built with care in Nigeria</div>
+  <div class="footer-socials">
+    <a href="https://github.com/eziuche-nwaogu" target="_blank">GitHub</a>
+    <a href="mailto:ezyurch@gmail.com">Email</a>
+    <a href="tel:+2347068085971">Phone</a>
+  </div>
+</footer>
+
+<script>
+  // ── Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  function animRing() { rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+  animRing();
+
+  // ── Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => obs.observe(r));
+
+  // ── Experience switcher
+  const expData = {
+    learnfactory: {
+      period: 'Oct 2024 – Present',
+      title: 'Part-Time Tutor',
+      company: 'LearnFactory Nigeria',
+      bullets: [
+        'Teach data engineering, backend development, and ETL workflows to aspiring developers.',
+        'Mentor students on Apache Airflow DAG design, PostgreSQL optimization, and Python best practices.',
+        'Design hands-on projects and exercises aligned with industry-standard workflows.',
+        'Guide students through building their first ETL pipelines and REST APIs from scratch.'
+      ]
+    },
+    mtn: {
+      period: 'Apr 2013 – Present',
+      title: 'IT Support Specialist',
+      company: 'Tri-Continental Distributions Ltd (MTN Nigeria)',
+      bullets: [
+        'Maintain enterprise servers including IBM/Lenovo BladeCenter and SystemX infrastructure.',
+        'Provide on-site and remote IT support across multiple MTN Nigeria locations.',
+        'Configure and troubleshoot enterprise networking equipment (switches, routers, VLANs).',
+        'Execute hardware upgrades, firmware updates, and preventive maintenance schedules.',
+        'Document incident reports and escalation procedures for server downtime events.'
+      ]
+    },
+    abba: {
+      period: 'Dec 2010 – Mar 2013',
+      title: 'Computer Maintenance Officer',
+      company: 'Aba North Town Planning Authority',
+      bullets: [
+        'Conducted hardware repairs, diagnostics, and component replacements for government workstations.',
+        'Performed OS installations, system cloning, and data backup/recovery operations.',
+        'Carried out electrical safety checks and UPS maintenance on all computing equipment.',
+        'Maintained inventory of hardware assets and procurement documentation.'
+      ]
+    }
+  };
+
+  function switchExp(el, key) {
+    document.querySelectorAll('.timeline-item').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const d = expData[key];
+    document.getElementById('exp-period').textContent = d.period;
+    document.getElementById('exp-title').textContent = d.title;
+    document.getElementById('exp-company').textContent = d.company;
+    const ul = document.getElementById('exp-bullets');
+    ul.innerHTML = d.bullets.map(b => `<li>${b}</li>`).join('');
+  }
+
+  // ── Project filter (visual only)
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // ── Form submission
+  function handleSubmit() {
+    const btn = document.querySelector('.form-submit');
+    btn.textContent = 'Message Sent ✓';
+    btn.style.background = 'var(--teal)';
+    setTimeout(() => { btn.textContent = 'Send Message →'; btn.style.background = 'var(--amber)'; }, 3000);
+  }
+</script>
+</body>
+</html>
